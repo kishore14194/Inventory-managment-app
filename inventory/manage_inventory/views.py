@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
-
+from manager_login.models import UserLogin
 from .utils import format_inventory
 from .models import ProductDetail, Product
 
@@ -78,6 +78,11 @@ class InventoryApprove(APIView):
 
     def post(self, request, format=None):
         data = json.loads(request.body)
+        user = request.user
+        perm = UserLogin.objects.get(user_id=user)
+        if not perm.is_store_manager:
+            return HttpResponse(json.dumps({"status":"fail", "date": "User doesn't have permission to approve"}))
+
         product_id = data.get('product_id')
         product = Product.objects.get(product_id=product_id)
         active_users = ProductDetail.objects.filter(product=product, status=False)

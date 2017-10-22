@@ -14,3 +14,4 @@ from django.contrib.auth.models import User
 #
 #     class Meta:
 #         db_table = 'user_login'
+

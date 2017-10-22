@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import json
 from django.http import HttpResponse
 from django.shortcuts import render
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
 from .utils import format_inventory
@@ -11,6 +12,7 @@ from .models import ProductDetail, Product
 
 
 class InventoryActiveList(APIView):
+    permission_classes = (IsAuthenticated,)
     def get(self, request, format=None):
         all_pro = ProductDetail.objects.filter(status=True)
         active_products_list = []
@@ -29,6 +31,8 @@ class InventoryActiveList(APIView):
         return HttpResponse(json.dumps(product_list))
 
 class InventoryNotActive(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, format=None):
         all_pro = ProductDetail.objects.filter(status=False)
         not_active_products_list = []
@@ -48,6 +52,8 @@ class InventoryNotActive(APIView):
 
 
 class InventoryAdd(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def post(self, request, format=None):
         data = json.loads(request.body)
         product_id = data.get('product_id')
@@ -68,6 +74,8 @@ class InventoryAdd(APIView):
         return HttpResponse("added")
 
 class InventoryApprove(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def post(self, request, format=None):
         data = json.loads(request.body)
         product_id = data.get('product_id')
@@ -84,7 +92,9 @@ class InventoryApprove(APIView):
         product_activate = {"status": "success", "data": product_id + " is activated"}
         return HttpResponse(json.dumps(product_activate))
 
-class DeleteProduct(APIView):
-    def delete(self, request, format=None):
-        print request.body
-        return HttpResponse("pass")
+# class DeleteProduct(APIView):
+#     permission_classes = (IsAuthenticated,)
+#
+#     def delete(self, request, format=None):
+#         return HttpResponse("pass")
+
